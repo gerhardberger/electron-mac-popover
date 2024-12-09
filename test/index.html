@@ -1,0 +1,89 @@
+<html>
+  <body>
+    <svg width="0" height="0">
+      <defs>
+        <clipPath id="squircleOneOnOneClipPath" clipPathUnits="objectBoundingBox">
+          <path d="M0.37,0 C0.09,0,0,0.09,0,0.37 V0.63 C0,0.91,0.09,1,0.37,1 H0.63 C0.91,1,1,0.91,1,0.63 L1,0.37 C1,0.09,0.91,0,0.63,0 H0.37" />
+        </clipPath>
+      </defs>
+    </svg>
+
+    <h2 style="color: black;">
+      Test
+    </h2>
+
+    <div>
+      <label>X:</label><input type="number" id="rect-x" /><br>
+      <label>Y:</label><input type="number" id="rect-y" /><br>
+      <label>Width:</label><input type="number" id="rect-w" /><br>
+      <label>Height:</label><input type="number" id="rect-h" /><br><br>
+      <br>
+      <select name="behavior" id="behavior">
+        <option value="application-defined">Application defined</option>
+        <option value="transient">Transient</option>
+        <option value="semi-transient">Semitransient</option>
+      </select>
+      <br>
+      <select name="edge" id="edge">
+        <option value="max-x-edge">Max X Edge</option>
+        <option value="max-y-edge">Max Y Edge</option>
+        <option value="min-x-edge">Min X Edge</option>
+        <option value="min-y-edge">Min Y Edge</option>
+      </select>
+      <br><br>
+      <label>Size width:</label><input type="number" id="size-w" /><br>
+      <label>Size height:</label><input type="number" id="size-h" /><br><br>
+      <br>
+      <label>Animate:</label><input type="checkbox" id="animate" /><br><br>
+
+      <button id="open">Open Popover</button>
+
+      <br><br>
+
+      <button id="close">Close Popover</button>
+
+      <br><br>
+
+      <!-- <button id="resize">Resize Popover</button> -->
+    </div>
+    <script>
+      async function init(e) {
+        try {
+          document.querySelector('#open').addEventListener('click', () => {
+            const x = Number(document.querySelector('#rect-x').value);
+            const y = Number(document.querySelector('#rect-y').value);
+            const pwidth = Number(document.querySelector('#rect-w').value);
+            const pheight = Number(document.querySelector('#rect-h').value);
+            const behavior = document.querySelector('#behavior').value;
+            const edge = document.querySelector('#edge').value;
+            const animate = document.querySelector('#animate').checked;
+            const width = Number(document.querySelector('#size-w').value);
+            const height = Number(document.querySelector('#size-h').value);
+
+            console.log(behavior, edge, animate);
+
+            electronAPI.openPopover(
+              { x, y, width: pwidth, height: pheight },
+              { width, height },
+              edge, behavior, animate
+            );
+          });
+
+          document.querySelector('#close').addEventListener('click', () => {
+            electronAPI.closePopover();
+          });
+
+          document.querySelector('#resize').addEventListener('click', () => {
+            const width = Number(document.querySelector('#size-w').value);
+            const height = Number(document.querySelector('#size-h').value);
+
+            electronAPI.sizePopover(width, height);
+          });
+
+        } catch (e) {
+        }
+      }
+      init()
+    </script>
+  </body>
+</html>
