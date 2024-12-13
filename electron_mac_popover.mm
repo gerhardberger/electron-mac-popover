@@ -87,9 +87,18 @@ void ElectronMacPopover::Show(const Napi::CallbackInfo& info) {
   NSSize size = NSMakeSize(size_obj.Get("width").As<Napi::Number>().DoubleValue(),
                            size_obj.Get("height").As<Napi::Number>().DoubleValue());
 
-  std::string behavior = options.Get("behavior").As<Napi::String>().Utf8Value();
-  std::string preferred_edge = options.Get("edge").As<Napi::String>().Utf8Value();
-  BOOL animate = options.Get("animate").As<Napi::Boolean>().Value();
+  std::string behavior = "application-defined";
+  if (options.Has("behavior")) {
+    behavior = options.Get("behavior").As<Napi::String>().Utf8Value();
+  }
+  std::string preferred_edge = "max-x-edge";
+  if (options.Has("edge")) {
+    preferred_edge = options.Get("edge").As<Napi::String>().Utf8Value();
+  }
+  BOOL animate = false;
+  if (options.Has("animate")) {
+    animate = options.Get("animate").As<Napi::Boolean>().Value();
+  }
 
   NSPopoverBehavior popover_behavior = NSPopoverBehaviorApplicationDefined;
   if (behavior == "transient") {
