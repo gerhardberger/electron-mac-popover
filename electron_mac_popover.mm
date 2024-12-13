@@ -99,6 +99,10 @@ void ElectronMacPopover::Show(const Napi::CallbackInfo& info) {
   if (options.Has("animate")) {
     animate = options.Get("animate").As<Napi::Boolean>().Value();
   }
+  std::string appearance = "aqua";
+  if (options.Has("appearance")) {
+    appearance = options.Get("appearance").As<Napi::String>().Utf8Value();
+  }
 
   NSPopoverBehavior popover_behavior = NSPopoverBehaviorApplicationDefined;
   if (behavior == "transient") {
@@ -114,6 +118,24 @@ void ElectronMacPopover::Show(const Napi::CallbackInfo& info) {
     popover_edge = NSMinXEdge;
   } else if (preferred_edge == "min-y-edge") {
     popover_edge = NSMinYEdge;
+  }
+
+  NSAppearanceName popover_appearance = NSAppearanceNameAqua;
+  if (appearance == "vibrantLight") {
+    popover_appearance = NSAppearanceNameVibrantLight;
+  }
+  if (@available(macOS 10.14, *)) {
+    if (appearance == "darkAqua") {
+      popover_appearance = NSAppearanceNameDarkAqua;
+    } else if (appearance == "accessibilityHighContrastAqua") {
+      popover_appearance = NSAppearanceNameAccessibilityHighContrastAqua;
+    } else if (appearance == "accessibilityHighContrastDarkAqua") {
+      popover_appearance = NSAppearanceNameAccessibilityHighContrastDarkAqua;
+    } else if (appearance == "accessibilityHighContrastVibrantLight") {
+      popover_appearance = NSAppearanceNameAccessibilityHighContrastVibrantLight;
+    } else if (appearance == "accessibilityHighContrastVibrantDark") {
+      popover_appearance = NSAppearanceNameAccessibilityHighContrastVibrantDark;
+    }
   }
 
   if (!popover_) {
@@ -134,6 +156,8 @@ void ElectronMacPopover::Show(const Napi::CallbackInfo& info) {
     [popover.contentViewController setView:view];
 
     [popover setContentSize:size];
+
+	[popover setAppearance:[NSAppearance appearanceNamed:popover_appearance]];
 
     id observer = [[NSNotificationCenter defaultCenter]
         addObserverForName:NSPopoverDidCloseNotification

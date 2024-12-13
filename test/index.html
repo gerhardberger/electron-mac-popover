@@ -30,6 +30,16 @@
         <option value="min-x-edge">Min X Edge</option>
         <option value="min-y-edge">Min Y Edge</option>
       </select>
+      <br>
+      <select name="appearance" id="appearance">
+        <option value="aqua">Aqua</option>
+        <option value="darkAqua">Dark Aqua</option>
+        <option value="vibrantLight">Vibrant Light</option>
+        <option value="accessibilityHighContrastAqua">Accessibility High Contrast Aqua</option>
+        <option value="accessibilityHighContrastDarkAqua">Accessibility High Contrast Dark Aqua</option>
+        <option value="accessibilityHighContrastVibrantLight">Accessibility High Contrast Vibrant Light</option>
+        <option value="accessibilityHighContrastVibrantDark">Accessibility High Contrast Vibrant Dark</option>
+      </select>
       <br><br>
       <label>Size width:</label><input type="number" id="size-w" /><br>
       <label>Size height:</label><input type="number" id="size-h" /><br><br>
@@ -59,13 +69,14 @@
             const animate = document.querySelector('#animate').checked;
             const width = Number(document.querySelector('#size-w').value);
             const height = Number(document.querySelector('#size-h').value);
+            const appearance = document.querySelector('#appearance').value;
 
-            console.log(behavior, edge, animate);
+            console.log(behavior, edge, animate, appearance);
 
             electronAPI.openPopover(
               { x, y, width: pwidth, height: pheight },
               { width, height },
-              edge, behavior, animate
+              edge, behavior, animate, appearance
             );
           });
 

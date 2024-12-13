@@ -23,8 +23,8 @@ app.on('ready', () => {
 
   const nativePopover = new ElectronMacPopover(popoverWindow.getNativeWindowHandle());
 
-  ipcMain.on('open-popover', (e, rect, size, edge, behavior, animate) => {
-    const options = { rect, size, edge, behavior, animate };
+  ipcMain.on('open-popover', (e, rect, size, edge, behavior, animate, appearance) => {
+    const options = { rect, size, edge, behavior, animate, appearance };
 
     console.log('event: open-popover', options);
 
