@@ -94,6 +94,8 @@ void ElectronMacPopover::Show(const Napi::CallbackInfo& info) {
   NSPopoverBehavior popover_behavior = NSPopoverBehaviorApplicationDefined;
   if (behavior == "transient") {
     popover_behavior = NSPopoverBehaviorTransient;
+  } else if (behavior == "semi-transient") {
+    popover_behavior = NSPopoverBehaviorSemitransient;
   }
 
   NSRectEdge popover_edge = NSMaxXEdge;
