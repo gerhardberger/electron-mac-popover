@@ -54,6 +54,8 @@ ElectronMacPopover::ElectronMacPopover(const Napi::CallbackInfo& info)
         .ThrowAsJavaScriptException();
     return;
   }
+
+  popover_ = nullptr;
 }
 
 void ElectronMacPopover::Show(const Napi::CallbackInfo& info) {
@@ -171,11 +173,18 @@ void ElectronMacPopover::Show(const Napi::CallbackInfo& info) {
     [popover setContentViewController:view_controller];
 
     [content_ setWantsLayer:YES];
-    NSView *view = content_.subviews.lastObject.subviews.lastObject;
+    NSView *view = content_;
+    if (content_.subviews.lastObject) {
+        view = content_.subviews.lastObject;
+        if (view.subviews.lastObject) {
+            view = view.subviews.lastObject;
+        }
+    }
+
     if (!view) {
-      Napi::Error::New(env, "Missing content view")
-          .ThrowAsJavaScriptException();
-      return;
+        Napi::Error::New(env, "Missing content view")
+            .ThrowAsJavaScriptException();
+        return;
     }
 
     objc_setAssociatedObject(view,
