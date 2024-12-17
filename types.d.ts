@@ -15,7 +15,7 @@ declare module 'electron-mac-popover' {
       | 'min-x-edge'
       | 'min-y-edge';
 	behavior?: 'transient' | 'semi-transient' | 'application-defined';
-    animates?: boolean;
+    animate?: boolean;
     appearance?: 'aqua'
       | 'darkAqua'
       | 'vibrantLight'
