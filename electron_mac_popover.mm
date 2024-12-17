@@ -49,6 +49,11 @@ ElectronMacPopover::ElectronMacPopover(const Napi::CallbackInfo& info)
   }
 
   content_ = *reinterpret_cast<NSView**>(info[0].As<Napi::Buffer<void*>>().Data());
+  if (!content_) {
+    Napi::TypeError::New(env, "Invalid native window handle")
+        .ThrowAsJavaScriptException();
+    return;
+  }
 }
 
 void ElectronMacPopover::Show(const Napi::CallbackInfo& info) {
@@ -73,10 +78,25 @@ void ElectronMacPopover::Show(const Napi::CallbackInfo& info) {
 
   NSView* positioning_content_view = *reinterpret_cast<NSView**>(
     info[0].As<Napi::Buffer<void*>>().Data());
+  if (!positioning_content_view) {
+    Napi::TypeError::New(env, "Invalid positioning content view")
+        .ThrowAsJavaScriptException();
+    return;
+  }
 
   Napi::Object options = info[1].As<Napi::Object>();
+  if (options.IsEmpty()) {
+    Napi::TypeError::New(env, "Options object expected")
+        .ThrowAsJavaScriptException();
+    return;
+  }
 
   Napi::Object rect = options.Get("rect").As<Napi::Object>();
+  if (rect.IsEmpty()) {
+    Napi::TypeError::New(env, "'rect' option is required")
+        .ThrowAsJavaScriptException();
+    return;
+  }
   NSRect positioning_rect =
       NSMakeRect(rect.Get("x").As<Napi::Number>().DoubleValue(),
                  rect.Get("y").As<Napi::Number>().DoubleValue(),
@@ -84,6 +104,11 @@ void ElectronMacPopover::Show(const Napi::CallbackInfo& info) {
                  rect.Get("height").As<Napi::Number>().DoubleValue());
 
   Napi::Object size_obj = options.Get("size").As<Napi::Object>();
+  if (size_obj.IsEmpty()) {
+    Napi::TypeError::New(env, "'size' option is required")
+        .ThrowAsJavaScriptException();
+    return;
+  }
   NSSize size = NSMakeSize(size_obj.Get("width").As<Napi::Number>().DoubleValue(),
                            size_obj.Get("height").As<Napi::Number>().DoubleValue());
 
@@ -147,6 +172,11 @@ void ElectronMacPopover::Show(const Napi::CallbackInfo& info) {
 
     [content_ setWantsLayer:YES];
     NSView *view = content_.subviews.lastObject.subviews.lastObject;
+    if (!view) {
+      Napi::Error::New(env, "Missing content view")
+          .ThrowAsJavaScriptException();
+      return;
+    }
 
     objc_setAssociatedObject(view,
                              &kDisallowVibrancyKey,
@@ -188,13 +218,16 @@ void ElectronMacPopover::Close(const Napi::CallbackInfo& info) {
 }
 
 void ElectronMacPopover::PopoverWindowClosed() {
-  [[NSNotificationCenter defaultCenter]
-      removeObserver:popover_closed_observer_];
-
-  // Add back view to BrowserWindow.
-  [content_.subviews.lastObject addSubview:popover_.contentViewController.view];
-
-  popover_closed_observer_ = nullptr;
+  if (popover_closed_observer_) {
+    [[NSNotificationCenter defaultCenter]
+        removeObserver:popover_closed_observer_];
+    popover_closed_observer_ = nullptr;
+  }
+  if (content_ && popover_) {
+    if (content_.subviews.lastObject && popover_.contentViewController.view) {
+      [content_.subviews.lastObject addSubview:popover_.contentViewController.view];
+    }
+  }
   popover_ = nullptr;
 }
 
@@ -202,10 +235,10 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   auto allowsVibrancyMethod = class_getInstanceMethod(
     NSClassFromString(@"WebContentsViewCocoa"),
     NSSelectorFromString(@"allowsVibrancy"));
-
-  g_originalAllowsVibrancy = method_setImplementation(allowsVibrancyMethod,
-    (IMP)&swizzledAllowsVibrancy);
-
+  if (allowsVibrancyMethod) {
+    g_originalAllowsVibrancy = method_setImplementation(allowsVibrancyMethod,
+      (IMP)&swizzledAllowsVibrancy);
+  }
   return ElectronMacPopover::Init(env, exports);
 }
 
