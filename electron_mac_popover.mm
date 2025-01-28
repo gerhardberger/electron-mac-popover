@@ -8,6 +8,9 @@ static IMP g_originalAllowsVibrancy;
 
 static char kDisallowVibrancyKey;
 
+Napi::ThreadSafeFunction tsfnClosed;
+void (*callbackClosed)(Napi::Env env, Napi::Function jsCallback);
+
 BOOL swizzledAllowsVibrancy(id obj, SEL sel) {
   NSNumber* disallowVibrancy = objc_getAssociatedObject(obj,
                                                         &kDisallowVibrancyKey);
@@ -23,6 +26,7 @@ Napi::Object ElectronMacPopover::Init(Napi::Env env, Napi::Object exports) {
   Napi::Function func = DefineClass(env, "ElectronMacPopover", {
     InstanceMethod("show", &ElectronMacPopover::Show),
     InstanceMethod("close", &ElectronMacPopover::Close),
+    InstanceMethod("onClosed", &ElectronMacPopover::SetupClosedCallback),
   });
 
   constructor = Napi::Persistent(func);
@@ -237,7 +241,21 @@ void ElectronMacPopover::PopoverWindowClosed() {
       [content_.subviews.lastObject addSubview:popover_.contentViewController.view];
     }
   }
+  if (tsfnClosed != NULL && callbackClosed != NULL) {
+    tsfnClosed.BlockingCall(callbackClosed);
+  }
   popover_ = nullptr;
+}
+
+void ElectronMacPopover::SetupClosedCallback(const Napi::CallbackInfo &info) {
+	Napi::Env env = info.Env();
+	if (info.Length() > 0 && info[0].IsFunction()) {
+		tsfnClosed = Napi::ThreadSafeFunction::New(env, info[0].As<Napi::Function>(), "Closed", 0, 1);
+		callbackClosed = [](Napi::Env env, Napi::Function jsCallback) { jsCallback.Call({}); };
+	} else {
+		tsfnClosed = NULL;
+		callbackClosed = NULL;
+	}
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {

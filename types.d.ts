@@ -29,5 +29,6 @@ declare module 'electron-mac-popover' {
     constructor(nativeWindowHandle: Buffer);
     show(nativeWindowHandle: Buffer, options: ShowOptions): void;
     close(): void;
+    onClosed(callback: () => void): void;
   }
 }

@@ -77,3 +77,9 @@ Opens the NSPopover.
 ### popover.close()
 
 Closes the NSPopover.
+
+### popover.onClosed(callback)
+
+Callback is called when the popover closes.
+
+- `callback`: Function
