@@ -1,6 +1,6 @@
 {
   "name": "electron-mac-popover",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A native module that can display webContents in an NSPopover.",
   "main": "index.js",
   "scripts": {
