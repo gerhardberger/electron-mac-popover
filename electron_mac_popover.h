@@ -17,6 +17,8 @@ class ElectronMacPopover : public Napi::ObjectWrap<ElectronMacPopover> {
   void PopoverWindowClosed();
   void SetupClosedCallback(const Napi::CallbackInfo &info);
 
+  void SetSize(const Napi::CallbackInfo& info);
+
   NSPopover* popover_;
   NSView* content_;
   id popover_closed_observer_;

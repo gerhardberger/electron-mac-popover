@@ -29,15 +29,17 @@ app.on('ready', () => {
 
   ipcMain.on('open-popover', (e, rect, size, edge, behavior, animate, appearance) => {
     const options = { rect, size, edge, behavior, animate, appearance };
-
     console.log('event: open-popover', options);
-
     nativePopover.show(win.getNativeWindowHandle(), options);
   });
 
   ipcMain.on('close-popover', (e) => {
     console.log('event: close-popover');
-
     nativePopover.close();
+  });
+
+  ipcMain.on('size-popover', (e, size, animate, duration) => {
+    console.log('event: size-popover', size, animate, duration);
+    nativePopover.setSize({size, animate, duration});
   });
 });

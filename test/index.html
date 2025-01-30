@@ -17,7 +17,6 @@
       <label>Y:</label><input type="number" id="rect-y" /><br>
       <label>Width:</label><input type="number" id="rect-w" /><br>
       <label>Height:</label><input type="number" id="rect-h" /><br><br>
-      <br>
       <select name="behavior" id="behavior">
         <option value="application-defined">Application defined</option>
         <option value="transient">Transient</option>
@@ -43,18 +42,21 @@
       <br><br>
       <label>Size width:</label><input type="number" id="size-w" /><br>
       <label>Size height:</label><input type="number" id="size-h" /><br><br>
-      <br>
       <label>Animate:</label><input type="checkbox" id="animate" /><br><br>
 
       <button id="open">Open Popover</button>
-
-      <br><br>
-
+	  &nbsp;
       <button id="close">Close Popover</button>
 
-      <br><br>
+      <br>
 
-      <!-- <button id="resize">Resize Popover</button> -->
+	  <h4>Resize</h4>
+      <label>Width:</label><input type="number" id="resize-w" value="300" /><br>
+      <label>Height:</label><input type="number" id="resize-h" value="400" /><br>
+      <label>Animate:</label><input type="checkbox" id="resize-animate" /><br>
+      <label>Duration (seconds):</label><input type="number" id="resize-duration" value="0.3" style="width: 60px;" /><br>
+      <button id="resize">Resize Popover</button>
+      <br>
     </div>
     <script>
       async function init(e) {
@@ -85,10 +87,12 @@
           });
 
           document.querySelector('#resize').addEventListener('click', () => {
-            const width = Number(document.querySelector('#size-w').value);
-            const height = Number(document.querySelector('#size-h').value);
+            const width = Number(document.querySelector('#resize-w').value);
+            const height = Number(document.querySelector('#resize-h').value);
+            const animate = document.querySelector('#resize-animate').checked;
+            const duration = Number(document.querySelector('#resize-duration').value);
 
-            electronAPI.sizePopover(width, height);
+            electronAPI.sizePopover({width, height}, animate, duration);
           });
 
         } catch (e) {

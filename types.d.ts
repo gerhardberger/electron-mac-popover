@@ -25,10 +25,20 @@ declare module 'electron-mac-popover' {
       | 'accessibilityHighContrastVibrantDark';
   }
 
+  export interface SetSizeOptions {
+    size: {
+      width: number;
+      height: number;
+    },
+    animate?: boolean;
+    duration?: number;
+  }
+
   export class ElectronMacPopover {
     constructor(nativeWindowHandle: Buffer);
     show(nativeWindowHandle: Buffer, options: ShowOptions): void;
     close(): void;
     onClosed(callback: () => void): void;
+    setSize(size: SetSizeOptions): void;
   }
 }

@@ -71,8 +71,16 @@ Opens the NSPopover.
   - `size` { width: number, height: number }
   - `edge` 'max-x-edge' | 'max-y-edge' | 'min-x-edge' | 'min-y-edge' (optional, default: 'max-x-edge')
   - `behavior` 'transient' | 'semi-transient' | 'application-defined' (optional, default: 'application-defined')
-  - `animates` boolean (optional, default: false)
+  - `animate` boolean (optional, default: false)
   - `appearance` 'aqua' | 'darkAqua' | 'vibrantLight' | 'accessibilityHighContrastAqua' | 'accessibilityHighContrastDarkAqua' | 'accessibilityHighContrastVibrantLight' | 'accessibilityHighContrastVibrantDark' (optional, default: 'aqua')
+
+### popover.setSize(size)
+
+Changes the size of the NSPopover.
+
+- `size` { width: number, height: number }
+- `animate`: boolean (optional, default: false)
+- `duration`: number in seconds (optional, default 0.3)
 
 ### popover.close()
 

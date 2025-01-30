@@ -1,6 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
+#import <QuartzCore/QuartzCore.h>
 
 #include "electron_mac_popover.h"
 
@@ -27,6 +28,7 @@ Napi::Object ElectronMacPopover::Init(Napi::Env env, Napi::Object exports) {
     InstanceMethod("show", &ElectronMacPopover::Show),
     InstanceMethod("close", &ElectronMacPopover::Close),
     InstanceMethod("onClosed", &ElectronMacPopover::SetupClosedCallback),
+    InstanceMethod("setSize", &ElectronMacPopover::SetSize),
   });
 
   constructor = Napi::Persistent(func);
@@ -256,6 +258,69 @@ void ElectronMacPopover::SetupClosedCallback(const Napi::CallbackInfo &info) {
 		tsfnClosed = NULL;
 		callbackClosed = NULL;
 	}
+}
+
+void ElectronMacPopover::SetSize(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+
+  if (info.Length() < 1 || !info[0].IsObject()) {
+    Napi::TypeError::New(env, "Object expected").ThrowAsJavaScriptException();
+    return;
+  }
+
+  Napi::Object options = info[0].As<Napi::Object>();
+  
+  if (!options.Has("size")) {
+    Napi::TypeError::New(env, "'size' option is required").ThrowAsJavaScriptException();
+    return;
+  }
+
+  Napi::Value size_val = options.Get("size");
+  if (!size_val.IsObject()) {
+    Napi::TypeError::New(env, "'size' must be an object").ThrowAsJavaScriptException();
+    return;
+  }
+
+  Napi::Object size_obj = size_val.As<Napi::Object>();
+  if (!size_obj.Has("width") || !size_obj.Has("height")) {
+    Napi::TypeError::New(env, "'size' must have width and height").ThrowAsJavaScriptException();
+    return;
+  }
+
+  Napi::Value width = size_obj.Get("width");
+  Napi::Value height = size_obj.Get("height");
+  
+  if (!width.IsNumber() || !height.IsNumber()) {
+    Napi::TypeError::New(env, "width and height must be numbers").ThrowAsJavaScriptException();
+    return;
+  }
+
+  NSSize size = NSMakeSize(width.As<Napi::Number>().DoubleValue(),
+                          height.As<Napi::Number>().DoubleValue());
+
+  BOOL animate = false;
+  if (options.Has("animate")) {
+    animate = options.Get("animate").As<Napi::Boolean>().Value();
+  }
+
+  double duration = 0.3;
+  if (options.Has("duration")) {
+    duration = options.Get("duration").As<Napi::Number>().DoubleValue();
+  }
+
+  if (popover_) {
+    if (animate) {
+      NSAnimationContext *currentContext = [NSAnimationContext currentContext];
+      currentContext.allowsImplicitAnimation = YES;
+      currentContext.duration = duration;
+      currentContext.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
+      [NSAnimationContext beginGrouping];
+      [popover_ setContentSize:size];
+      [NSAnimationContext endGrouping];
+    } else {
+      [popover_ setContentSize:size];
+    }
+  }
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {

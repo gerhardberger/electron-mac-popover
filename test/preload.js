@@ -7,5 +7,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
     closePopover: () => {
         ipcRenderer.send('close-popover');
     },
-    sizePopover: (w, h) => ipcRenderer.send('size-popover', w, h)
+    sizePopover: (size, animate, duration) => ipcRenderer.send('size-popover', size, animate, duration)
 })
