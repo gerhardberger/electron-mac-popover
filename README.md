@@ -39,8 +39,8 @@ app.on('ready', () => {
 
   const nativePopover = new ElectronMacPopover(popoverWindow.getNativeWindowHandle());
 
-  ipcMain.on('open-popover', (e, rect, size, edge, behavior, animate) => {
-    const options = { rect, size, edge, behavior, animate };
+  ipcMain.on('open-popover', (e, rect, size, edge, behavior, animate, appearance) => {
+    const options = { rect, size, edge, behavior, animate, appearance };
 
     nativePopover.show(win.getNativeWindowHandle(), options);
   });
@@ -66,8 +66,28 @@ Opens the NSPopover.
 
 - `positioningWindowHandle`: the native window handle of a BrowserWindow that
   the popover will be positioned relative to.
-- `options`: can be found in the [official docs](https://developer.apple.com/documentation/appkit/nspopover).
+- `options`: (passed through to [NSPopover](https://developer.apple.com/documentation/appkit/nspopover))
+  - `rect` { x: number, y: number, width: number, height: number }
+  - `size` { width: number, height: number }
+  - `edge` 'max-x-edge' | 'max-y-edge' | 'min-x-edge' | 'min-y-edge' (optional, default: 'max-x-edge')
+  - `behavior` 'transient' | 'semi-transient' | 'application-defined' (optional, default: 'application-defined')
+  - `animate` boolean (optional, default: false)
+  - `appearance` 'aqua' | 'darkAqua' | 'vibrantLight' | 'accessibilityHighContrastAqua' | 'accessibilityHighContrastDarkAqua' | 'accessibilityHighContrastVibrantLight' | 'accessibilityHighContrastVibrantDark' (optional, default: 'aqua')
+
+### popover.setSize(size)
+
+Changes the size of the NSPopover.
+
+- `size` { width: number, height: number }
+- `animate`: boolean (optional, default: false)
+- `duration`: number in seconds (optional, default 0.3)
 
 ### popover.close()
 
 Closes the NSPopover.
+
+### popover.onClosed(callback)
+
+Callback is called when the popover closes.
+
+- `callback`: Function
