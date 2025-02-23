@@ -30,11 +30,11 @@
   "homepage": "https://github.com/gerhardberger/electron-mac-popover#readme",
   "devDependencies": {
     "electron": "^33.3.0",
-    "node-gyp": "^9.0.0"
+    "node-gyp": "^9.0.0",
+    "node-addon-api": "^3.0.2"
   },
   "dependencies": {
-    "bindings": "^1.5.0",
-    "node-addon-api": "^3.0.2"
+    "bindings": "^1.5.0"
   },
   "types": "types.d.ts"
 }
